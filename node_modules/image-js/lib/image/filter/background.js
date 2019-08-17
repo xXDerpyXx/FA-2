@@ -1,0 +1,38 @@
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = background;
+
+var _mlRegression = require('ml-regression');
+
+var _Image = require('../Image');
+
+var _Image2 = _interopRequireDefault(_Image);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+/**
+ * @memberof Image
+ * @instance
+ * @param {Array<Array<number>>} coordinates
+ * @param {Array<Array<number>>} values;
+ * @param {object} [options]
+ * @return {Image}
+ */
+function background(coordinates, values, options) {
+  const model = new _mlRegression.KernelRidgeRegression(coordinates, values, options);
+  const allCoordinates = new Array(this.size);
+  for (let i = 0; i < this.width; i++) {
+    for (let j = 0; j < this.height; j++) {
+      allCoordinates[j * this.width + i] = [i, j];
+    }
+  }
+  const result = model.predict(allCoordinates);
+  const background = _Image2.default.createFrom(this);
+  for (let i = 0; i < this.size; i++) {
+    background.data[i] = Math.min(this.maxValue, Math.max(0, result[i][0]));
+  }
+  return background;
+}
