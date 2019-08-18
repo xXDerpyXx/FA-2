@@ -368,7 +368,7 @@ function randOre(biome){
 function randGather(biome){
     var output = [];
     if(biome == "jungle"){ 
-        if(Math.random() > 0.25){
+        if(Math.random() > 0.75){
             output[0] = "cocoa_beans";
             output[1] = "you find some cocoa beans in some trees";
         }else if(Math.random() > 0.5){
@@ -518,6 +518,7 @@ items["jelly"] = new Food(true,"jelly",15)
 items["pbj"] = new Food(true,"pbj",50)
 items["apple_sauce"] = new Food(true,"apple_sauce",40)
 items["caramel_apple"] = new Food(true,"caramel_apple",50)
+items["rice_bowl"] = new Food(true,"rice_bowl",20)
 
 items["sugar_cane"] = new Food(true,"sugar_cane",5)
 items["sugar"] = new Food(true,"sugar",7)
@@ -612,6 +613,11 @@ map[2] = new District(0,[1,3,0,4],"plains");
 map[3] = new District(0,[0,1,2],"jungle");
 map[4] = new District(0,[0,2],"mountains");
 */
+
+for(var k in items){
+    console.log(items[k].type+":"+items[k].name)
+}
+
 class Person 
 {   
     /**
@@ -749,6 +755,16 @@ client.on('message', msg => {
                 for(var  i = 0; i < list.length; i++){
                     client.users.get(list[i]).send(msg.author.tag+": "+msg.content.substring(4));
                 }
+            }
+
+            if(content[0] == prefix+"suggest"){
+                var randid = "<@246589957165023232>";
+                if(Math.random() > 0.5){
+                    randid = "<@195607483392196609>";
+                }
+                client.channels.get("612462603280842752").send(randid+": "+msg.content.substring(8));
+                msg.channel.send("your suggestion has been sent!");
+                
             }
 
             if(content[0] == prefix+"die"){

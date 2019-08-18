@@ -29,6 +29,11 @@
         "station":null,
         "parts":["water","flour"]
     },
+    "rice_bowl":{
+        "count":1,
+        "station":null,
+        "parts":["water","rice"]
+    },
     "ginger_tea":{
         "count":1,
         "station":null,
