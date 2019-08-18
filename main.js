@@ -78,7 +78,7 @@ imgobj("./map.png", function(rgbs)
         }
 
         if(r == 185 && g == 122 && b == 87){
-            map[i] = new District(i,[],"valcano")
+            map[i] = new District(i,[],"volcano")
         }
 
         if(r == 63 && g == 72 && b == 204){
@@ -354,7 +354,7 @@ function randOre(biome){
         }
     }
 
-    if(biome == "valcano"){
+    if(biome == "volcano"){
         if(Math.random() < 0.05){
             return "gold_ore";
         }else if(Math.random() < 0.5){
