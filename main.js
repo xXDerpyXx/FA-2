@@ -157,6 +157,7 @@ class District
         this.id = id;
         this.neighbors = neighbors;
         this.biome = biome;
+        this.infrastructure = 0;
     }
 }
 
