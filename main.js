@@ -1,6 +1,5 @@
 const Discord = require("discord.js");
 const client = new Discord.Client();
-const token = require("./token.js");
 const fs = require("fs");
 var prefix = "$";
 var people = require("./people.json");
@@ -709,8 +708,13 @@ client.on('message', msg => {
         if(people[msg.author.id] == null){
             if(content[0] == prefix+"join"){
                 if(content[1] != null && map[content[1]] != null){
-                    people[msg.author.id] = new Person(parseInt(content[1]),msg.author.id,"");
-                    msg.channel.send("you have been born! welcome to the world! you are in district "+content[1]+", a "+map[content[1]].biome);
+                    if(map[content[1]].biome != "ocean"){
+                        people[msg.author.id] = new Person(parseInt(content[1]),msg.author.id,"");
+                        msg.channel.send("you have been born! welcome to the world! you are in district "+content[1]+", a "+map[content[1]].biome);
+                    }else{
+                        msg.channel.send("that be ocean, you cant start there");
+                    }
+
                 }else{
                     msg.channel.send("you need to pick a district to start in, use $xy and map coordinates to get the district number");
                 }
@@ -746,6 +750,11 @@ client.on('message', msg => {
                 }
             }
 
+            if(content[0] == prefix+"die"){
+                delete people[id];
+                msg.channel.send("oh no, you died, oof");
+            }
+
             if(content[0] == prefix+"top"){
                 var temp = "";
                 var list = [];
@@ -757,6 +766,7 @@ client.on('message', msg => {
                         list.push(t);
                     }
                 }
+
 
                 for(var i = 0; i < list.length; i++){
                     for(var j = 0; j < list.length-1; j++){
@@ -1108,4 +1118,5 @@ client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
   });
 
+  const token = require("./token.js");
 client.login(token);
