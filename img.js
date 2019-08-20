@@ -91,10 +91,10 @@ module.exports = async function imgmap(cx,cy, scale, radius, map, people, client
 
     for(var k in people){
         if (people[k].id == id) return;
-        doDraw(k);
+        await doDraw(k);
     }
-    doDraw(id);
-    function doDraw(k) {
+    await doDraw(id);
+    async function doDraw(k) {
         var here = districttoxy(people[k].district);
         
         var x = here[0];
