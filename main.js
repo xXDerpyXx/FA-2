@@ -463,8 +463,9 @@ items["tears"] = new Resource(true,"tears");
 items["salt"] = new Resource(true,"salt");
 items["saltpeter"] = new Resource(true,"saltpeter");
 items["gunpowder"] = new Resource(true,"gunpowder");
-
-
+items["iron_blade"] = new Resource(true,"iron_blade");
+items["bone"] = new Resource(true,"bone");
+items["bone_meal"] = new Resource(true,"bone_meal");
 
 items["worktable"] = new Resource(true,"worktable");
 items["furnace"] = new Resource(true,"furnace");
@@ -537,6 +538,16 @@ items["berry_juice"] = new Food(true,"berry_juice",30)
 items["cactus"] = new Food(true,"cactus",3)
 items["cactus_juice"] = new Food(true,"cactus_juice",15)
 items["bread"] = new Food(true,"bread",20)
+items["bread_slice"] = new Food(true,"bread_slice",5)
+items["toast"] = new Food(true,"toast",10)
+items["beef"] = new Food(true,"beef",7)
+items["fowl"] = new Food(true,"fowl",6)
+items["venison"] = new Food(true,"venison",9)
+items["mutton"] = new Food(true,"mutton",7)
+items["stock"] = new Food(true,"stock",4)
+items["steak_soup"] = new Food(true,"steak_soup",40)
+items["chicken_soup"] = new Food(true,"chicken_soup",35)
+items["chicken_noodle_soup"] = new Food(true,"chicken_noodle_soup",50)
 items["berry_pie"] = new Food(true,"berry_pie",50)
 items["apple_pie"] = new Food(true,"apple_pie",60)
 items["fizzy_water"] = new Food(true,"fizzy_water",10)
@@ -567,6 +578,10 @@ items["oil_rig"] = new Tool(false,"oil_rig",50, function(id,msg){
         
 
 },"desert",5);
+
+items["iron_knife"] = new Tool(false,"iron_knife",50, function(id,msg){
+
+},"any",5);
 
 items["stone_pickaxe"] = new Tool(false,"stone_pickaxe",50, function(id,msg){
     if(Math.random() < 0.9){
@@ -633,6 +648,7 @@ class Person
         this.inventory = {};
         this.nationality = nationality;
         this.hunger = 100;
+        this.hp = 100;
     }
 
     /**
@@ -671,7 +687,23 @@ class Person
     }
 }
 
+
+
 for(var k in people){
+    /*try{
+        client.fetchUser(k).then(u => {
+            if(u != null)
+                people[k].avatarURL = u.avatarURL();
+        }).catch(err => {
+            console.log(err);
+        });
+        console.log(people[k].avatarURL);
+    }catch(err){*/
+        //people[k].avatarURL = "./humanperson.png";
+    //}
+    people[k].damage = function(amount){
+        this.hp -= amount;
+    }
     people[k].addItem = function(name, count)
     {
         if (this.inventory[name] == undefined)
@@ -692,6 +724,11 @@ client.on('message', msg => {
         if(msg.author.id == 499635978223353877){
             return;
         }
+
+        
+        
+        
+        
         var content = msg.content.split(" ");
         var id = msg.author.id;
         
@@ -736,6 +773,19 @@ client.on('message', msg => {
                         msg.channel.send("given item");
                     }
                 }
+            }
+            try{
+                client.fetchUser(id).then(u => {
+                    if(u != null)
+                        people[id].avatarURL = u.avatarURL;
+                    else
+                        people[id].avatarURL = "./humanperson.png";
+                }).catch(err => {
+                    console.log(err);
+                });
+                console.log(people[id].avatarURL);
+            }catch(err){
+                people[id].avatarURL = "./humanperson.png";
             }
             if(people[id].district == null){
                 if(content[0] == prefix+"join"){
@@ -865,8 +915,10 @@ client.on('message', msg => {
                     content[2] = 5;
                 content[2] = parseInt(content[2]);
 
-                var temp = mapmagic(here[0],here[1], 100, content[2], map,people);
-                msg.channel.send(new Discord.Attachment(temp, ""));
+                mapmagic(here[0],here[1], 100, content[2], map,people).then((temp) => {
+                    msg.channel.send(new Discord.Attachment(temp, ""));
+                })
+                
                 /*
                 msg.channel.send(stringmap(here[0],here[1],content[2]));
                 */
@@ -1133,6 +1185,10 @@ client.on('message', msg => {
 
 client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
+    var serverList = client.guilds.array();
+        for(var k in serverList){
+            console.log(serverList[k].name);
+        }
   });
 
   const token = require("./token.js");

@@ -1,4 +1,21 @@
 const {createCanvas} = require("canvas");
+var c = require("canvas");
+const axios = require('axios');
+
+const download_image = (url) =>
+  axios({
+    method: 'get',
+    url: url,
+    responseType: 'arraybuffer',
+  }).then(
+    (response) =>
+      {
+        var temp = new c.Image();
+        temp.src = new Buffer(response.data)
+          return temp;
+      }
+  );
+
 var biomes = {
     15721648: "desert",
     41704: "ocean",
@@ -11,9 +28,21 @@ var biomes = {
     8912917: "swamp",
     15539236: "jungle",
     10082794: "taiga",
-    12155479: "valcano",
+    12155479: "volcano",
 };
+var person = null;
+var boat = null;
+var boattop = null;
+async function load(){
+    person = await c.loadImage('./humanperson.png');
+    boat = await c.loadImage('./humanpersoninboat.png');
+    boattop = await c.loadImage('./boattop.png');
+}
 
+
+
+
+load();
 function xytodistrict(x,y){
     return (y*400)+x;
 }
@@ -28,10 +57,13 @@ Object.entries(biomes).map(a => [a[1], parseInt(a[0])]).forEach(e => {
     colors[e[0]] = e[1];
 });
 */
+async function getImage(url){
+    return await c.loadImage(url);
+}
 for(var k in biomes){
     colors[biomes[k]] = numToHex(k);
 }
-module.exports = function imgmap(cx,cy, scale, radius, map,people){
+module.exports = async function imgmap(cx,cy, scale, radius, map,people){
     if(radius > 100 || scale > 1000){
         radius = 100;
         scale = 1000
@@ -66,14 +98,44 @@ module.exports = function imgmap(cx,cy, scale, radius, map,people){
 
     for(var k in people){
         here = districttoxy(people[k].district);
+        
         var x = here[0];
-        var y = here[1]+1;
+        var y = here[1];
         x = x - cx + radius;
         y = y - cy + radius;
-        ctx.fillStyle = "#FFFFFF";
-        ctx.fillText("☺", x * scale, y * scale);
-        ctx.fillStyle = "#000000";
-        ctx.fillText("☺", (x * scale)+2, (y * scale)+2);
+        if(map[people[k].district].biome == "ocean"){
+            if(people[k].avatarURL == null || people[k].avatarURL == "./humanperson.png")
+                ctx.drawImage(boat,x * scale, y * scale,scale,scale);
+            else{
+                console.log(people[k].avatarURL);
+                await download_image(people[k].avatarURL).then((avatar) => {
+                    console.log(avatar);
+                    ctx.drawImage(boat,x * scale, y * scale,scale,scale);
+                    ctx.drawImage(avatar,(x * scale)+((scale * 0.33)/2), y * scale,scale*0.67,scale*0.67);
+                    ctx.drawImage(boattop,x * scale, y * scale,scale,scale);
+                }).catch((err) => console.log(err));
+                
+            }
+            
+        }else{
+            if(x * scale < img.width && x * scale > 0 && y * scale < img.height && y * scale > 0){
+                if(people[k].avatarURL == null || people[k].avatarURL == "./humanperson.png")
+                    ctx.drawImage(person,x * scale, y * scale,scale,scale);
+                else{
+                    console.log(people[k].avatarURL);
+                    await download_image(people[k].avatarURL).then((avatar) => {
+                        console.log(avatar);
+                        ctx.drawImage(avatar,x * scale, y * scale,scale,scale);
+                    }).catch((err) => console.log(err));
+                    
+                }
+            }
+        }
+        
+        //ctx.fillStyle = "#FFFFFF";
+        //ctx.fillText("☺", x * scale, y * scale);
+        //ctx.fillStyle = "#000000";
+        //ctx.fillText("☺", (x * scale)+2, (y * scale)+2);
     }
     return img.createPNGStream()//("image/png",{ compressionLevel: 3, filters: img.PNG_FILTER_NONE });
 }

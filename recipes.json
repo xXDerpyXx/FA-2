@@ -239,7 +239,7 @@
     "pbj":{
         "count":4,
         "station":"worktable",
-        "parts":["bread","peanut_butter","jelly","bread"]
+        "parts":["bread_slice","peanut_butter","jelly","bread_slice"]
     },
     "apple_sauce":{
         "count":1,
@@ -250,5 +250,26 @@
         "count":1,
         "station":"worktable",
         "parts":["apple","caramel"]
+    },
+    "iron_blade":{
+        "count":1,
+        "station":"worktable",
+        "parts":["iron_plate","rock"]
+    },
+    "iron_knife":{
+        "count":1,
+        "station":"worktable",
+        "parts":["iron_blade","log","hammer"]
+    },
+    "toast":{
+        "count":1,
+        "station":"furnace",
+        "parts":["bread_slice"]
+    },
+    "bread_slice":{
+        "count":4,
+        "station":"worktable",
+        "parts":["bread","iron_knife"]
     }
+
 }
