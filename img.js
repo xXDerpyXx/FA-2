@@ -4,13 +4,13 @@ const axios = require('axios');
 const cache = {};
 const download_image = async (url) => {
     let temp = cache[url];
-    if (temp === undefined) {
+    if (temp == undefined) {
         let response = await axios({
             method: 'get',
             url,
             responseType: 'arraybuffer',
         }); 
-        let temp = new c.Image();
+        temp = new c.Image();
         temp.src = new Buffer(response.data);
         cache[url] = temp;
     }
