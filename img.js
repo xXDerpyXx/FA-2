@@ -109,7 +109,7 @@ module.exports = async function imgmap(cx,cy, scale, radius, map, people, client
                 ctx.drawImage(avatar,(x * scale)+((scale * 0.33)/2), y * scale,scale*0.67,scale*0.67);
                 ctx.drawImage(boattop,x * scale, y * scale,scale,scale);
             }else{
-                ctx.drawImage(avatar,x * scale, y * scale,scale,scale);
+                ctx.drawImage(avatar,(x * scale) + (scale*0.1), (y * scale) + (scale*0.1),scale*0.8,scale*0.8);
             }
         }
         
