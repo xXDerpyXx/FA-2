@@ -1,15 +1,19 @@
 const {createCanvas} = require("canvas");
 var c = require("canvas");
 const axios = require('axios');
-
+const cache = {};
 const download_image = async (url) => {
-    let response = await axios({
-        method: 'get',
-        url,
-        responseType: 'arraybuffer',
-    })
-    let temp = new c.Image();
-    temp.src = new Buffer(response.data)
+    let temp = cache[url];
+    if (temp === undefined) {
+        let response = await axios({
+            method: 'get',
+            url,
+            responseType: 'arraybuffer',
+        }); 
+        let temp = new c.Image();
+        temp.src = new Buffer(response.data);
+        cache[url] = temp;
+    }
     return temp;
 }
 
@@ -52,7 +56,7 @@ async function getImage(url){
 for(var k in biomes){
     colors[biomes[k]] = numToHex(k);
 }
-module.exports = async function imgmap(cx,cy, scale, radius, map, people, client){
+module.exports = async function imgmap(cx,cy, scale, radius, map, people, client, id){
     if(radius > 100 || scale > 1000){
         radius = 100;
         scale = 1000
@@ -86,7 +90,12 @@ module.exports = async function imgmap(cx,cy, scale, radius, map, people, client
     }
 
     for(var k in people){
-        here = districttoxy(people[k].district);
+        if (people[k].id == id) return;
+        doDraw(k);
+    }
+    doDraw(id);
+    function doDraw(k) {
+        var here = districttoxy(people[k].district);
         
         var x = here[0];
         var y = here[1];
@@ -109,14 +118,9 @@ module.exports = async function imgmap(cx,cy, scale, radius, map, people, client
                 ctx.drawImage(avatar,(x * scale)+((scale * 0.33)/2), y * scale,scale*0.67,scale*0.67);
                 ctx.drawImage(boattop,x * scale, y * scale,scale,scale);
             }else{
-                ctx.drawImage(avatar,(x * scale) + (scale*0.1), (y * scale) + (scale*0.1),scale*0.8,scale*0.8);
+                ctx.drawImage(avatar,x * scale, y * scale,scale,scale);
             }
         }
-        
-        //ctx.fillStyle = "#FFFFFF";
-        //ctx.fillText("☺", x * scale, y * scale);
-        //ctx.fillStyle = "#000000";
-        //ctx.fillText("☺", (x * scale)+2, (y * scale)+2);
     }
     return img.createPNGStream()//("image/png",{ compressionLevel: 3, filters: img.PNG_FILTER_NONE });
 }
