@@ -88,11 +88,10 @@ module.exports = async function imgmap(cx,cy, scale, radius, map, people, client
         px = 0;
         py++;
     }
-
-    for(var k in people){
-        if (people[k].id == id) return;
-        await doDraw(k);
-    }
+    let promises = Object.entries(people).filter(a => a[0] != id).map(([k,p]) => {
+        return doDraw(k);
+    });
+    await Promise.all(promises);
     await doDraw(id);
     async function doDraw(k) {
         var here = districttoxy(people[k].district);
@@ -122,7 +121,7 @@ module.exports = async function imgmap(cx,cy, scale, radius, map, people, client
             }
         }
     }
-    return img.createPNGStream()//("image/png",{ compressionLevel: 3, filters: img.PNG_FILTER_NONE });
+    return img.createPNGStream();//("image/png",{ compressionLevel: 3, filters: img.PNG_FILTER_NONE });
 }
 
 

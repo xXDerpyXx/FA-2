@@ -916,7 +916,7 @@ client.on('message', msg => {
                 content[2] = parseInt(content[2]);
 
                 mapmagic(here[0],here[1], 100, content[2], map,people, client, msg.author.id).then((temp) => {
-                    msg.channel.send(new Discord.Attachment(temp, ""));
+                    msg.channel.send(new Discord.Attachment(temp, "image.png"));
                 })
                 
                 /*
