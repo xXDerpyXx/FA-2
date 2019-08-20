@@ -2,19 +2,16 @@ const {createCanvas} = require("canvas");
 var c = require("canvas");
 const axios = require('axios');
 
-const download_image = (url) =>
-  axios({
-    method: 'get',
-    url: url,
-    responseType: 'arraybuffer',
-  }).then(
-    (response) =>
-      {
-        var temp = new c.Image();
-        temp.src = new Buffer(response.data)
-          return temp;
-      }
-  );
+const download_image = async (url) => {
+    let response = await axios({
+        method: 'get',
+        url,
+        responseType: 'arraybuffer',
+    })
+    let temp = new c.Image();
+    temp.src = new Buffer(response.data)
+    return temp;
+}
 
 var biomes = {
     15721648: "desert",
@@ -39,9 +36,6 @@ async function load(){
     boattop = await c.loadImage('./boattop.png');
 }
 
-
-
-
 load();
 function xytodistrict(x,y){
     return (y*400)+x;
@@ -52,18 +46,13 @@ function districttoxy(num){
 }
 
 var colors = {};
-/*
-Object.entries(biomes).map(a => [a[1], parseInt(a[0])]).forEach(e => {
-    colors[e[0]] = e[1];
-});
-*/
 async function getImage(url){
     return await c.loadImage(url);
 }
 for(var k in biomes){
     colors[biomes[k]] = numToHex(k);
 }
-module.exports = async function imgmap(cx,cy, scale, radius, map,people){
+module.exports = async function imgmap(cx,cy, scale, radius, map, people, client){
     if(radius > 100 || scale > 1000){
         radius = 100;
         scale = 1000
@@ -103,32 +92,24 @@ module.exports = async function imgmap(cx,cy, scale, radius, map,people){
         var y = here[1];
         x = x - cx + radius;
         y = y - cy + radius;
-        if(map[people[k].district].biome == "ocean"){
-            if(people[k].avatarURL == null || people[k].avatarURL == "./humanperson.png")
-                ctx.drawImage(boat,x * scale, y * scale,scale,scale);
-            else{
-                console.log(people[k].avatarURL);
-                await download_image(people[k].avatarURL).then((avatar) => {
-                    console.log(avatar);
-                    ctx.drawImage(boat,x * scale, y * scale,scale,scale);
-                    ctx.drawImage(avatar,(x * scale)+((scale * 0.33)/2), y * scale,scale*0.67,scale*0.67);
-                    ctx.drawImage(boattop,x * scale, y * scale,scale,scale);
-                }).catch((err) => console.log(err));
-                
+        if(people[k].avatarURL == null || people[k].avatarURL == "./humanperson.png") {
+            let user = await client.fetchUser(people[k].id);
+            people[k].avatarURL = user.avatarURL;
+        }
+        if(x * scale < img.width && x * scale > 0 && y * scale < img.height && y * scale > 0) {
+            let avatar;
+            try {
+                avatar = await download_image(people[k].avatarURL)
             }
-            
-        }else{
-            if(x * scale < img.width && x * scale > 0 && y * scale < img.height && y * scale > 0){
-                if(people[k].avatarURL == null || people[k].avatarURL == "./humanperson.png")
-                    ctx.drawImage(person,x * scale, y * scale,scale,scale);
-                else{
-                    console.log(people[k].avatarURL);
-                    await download_image(people[k].avatarURL).then((avatar) => {
-                        console.log(avatar);
-                        ctx.drawImage(avatar,x * scale, y * scale,scale,scale);
-                    }).catch((err) => console.log(err));
-                    
-                }
+            catch(e) {
+                avatar = person
+            }
+            if(map[people[k].district].biome == "ocean"){
+                ctx.drawImage(boat,x * scale, y * scale,scale,scale);
+                ctx.drawImage(avatar,(x * scale)+((scale * 0.33)/2), y * scale,scale*0.67,scale*0.67);
+                ctx.drawImage(boattop,x * scale, y * scale,scale,scale);
+            }else{
+                ctx.drawImage(avatar,x * scale, y * scale,scale,scale);
             }
         }
         
