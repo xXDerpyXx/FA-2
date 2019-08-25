@@ -34,11 +34,28 @@ var biomes = {
 var person = null;
 var boat = null;
 var boattop = null;
+var biomeImages = {}
 async function load(){
     person = await c.loadImage('./humanperson.png');
-    boat = await c.loadImage('./humanpersoninboat.png');
-    boattop = await c.loadImage('./boattop.png');
+    boat = await c.loadImage('./hdboat.png');
+    boattop = await c.loadImage('./hdboattop.png');
+    biomeImages["mountains"] = await c.loadImage('./mountain.png');
+    biomeImages["forest"] = await c.loadImage('./forest.png');
+    biomeImages["plains"] = await c.loadImage('./plains.png');
+    biomeImages["savannah"] = await c.loadImage('./savannah.png');
+    biomeImages["volcano"] = await c.loadImage('./valcano.png');
+    biomeImages["taiga"] = await c.loadImage('./tigia.png');
+    biomeImages["snowy"] = await c.loadImage('./snowy.png');
+    biomeImages["jungle"] = await c.loadImage('./jungle.png');
+    biomeImages["ocean"] = await c.loadImage('./ocean.png');
+    biomeImages["valley"] = await c.loadImage('./valley.png');
+    biomeImages["swamp"] = await c.loadImage('./swamp.png');
+    biomeImages["desert"] = await c.loadImage('./desert.png');
+
+
+
 }
+
 
 load();
 function xytodistrict(x,y){
@@ -75,8 +92,14 @@ module.exports = async function imgmap(cx,cy, scale, radius, map, people, client
                 continue;
             }
             let biome = map[here].biome;
-            ctx.fillStyle = colors[biome] === undefined ? "#000000" : colors[biome];
-            ctx.fillRect(px * scale, py * scale, scale, scale);
+            if(biomeImages[biome] != null){
+                var tempimage = biomeImages[biome];
+                ctx.drawImage(tempimage,px * scale, py * scale, scale, scale);
+            }else{
+                ctx.fillStyle = colors[biome] === undefined ? "#000000" : colors[biome];
+                ctx.fillRect(px * scale, py * scale, scale, scale);
+            }
+            
             /*if(x == cx && y == cy){
                 ctx.fillStyle = "#FFFFFF";
                 ctx.fillText("☺", px * scale, (py+1) * scale);

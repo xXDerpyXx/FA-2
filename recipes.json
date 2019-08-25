@@ -109,6 +109,11 @@
         "station":"furnace",
         "parts":["dough","apple"]
     },
+    "orange_pie":{
+        "count":1,
+        "station":"furnace",
+        "parts":["dough","orange"]
+    },
     "hammer":{
         "count":50,
         "station":"worktable",
@@ -266,10 +271,89 @@
         "station":"furnace",
         "parts":["bread_slice"]
     },
+    "pasta":{
+        "count":2,
+        "station":"furnace",
+        "parts":["dough","iron_knife"]
+    },
+    "macaroni_and_cheese":{
+        "count":2,
+        "station":"furnace",
+        "parts":["pasta","water","milk","butter","cheese"]
+    },
     "bread_slice":{
         "count":4,
         "station":"worktable",
         "parts":["bread","iron_knife"]
+    },
+    "salted_peanuts":{
+        "count":1,
+        "station":"furnace",
+        "parts":["peanuts","salt"]
+    },
+    "butter":{
+        "count":1,
+        "station":"worktable",
+        "parts":["milk","salt"]
+    },
+    "garlic_bread":{
+        "count":1,
+        "station":"worktable",
+        "parts":["garlic","butter","bread_slice"]
+    },
+    "chicken_noodle_soup":{
+        "count":2,
+        "station":"furnace",
+        "parts":["fowl","water","pasta"]
+    },
+    "chicken_soup":{
+        "count":2,
+        "station":"furnace",
+        "parts":["fowl","water"]
+    },
+    "stock":{
+        "count":2,
+        "station":"furnace",
+        "parts":["onion","bone","water"]
+    },
+    "wood_wheel":{
+        "count":1,
+        "station":"worktable",
+        "parts":["hammer","log","log"]
+    },
+    "spinner":{
+        "count":1,
+        "station":"worktable",
+        "parts":["wood_wheel","log","log"]
+    },
+    "string":{
+        "count":2,
+        "station":"spinner",
+        "parts":["wool"]
+    },
+    "bow":{
+        "count":1,
+        "station":"worktable",
+        "parts":["log","string","log"]
+    },
+    "arrow":{
+        "count":4,
+        "station":"worktable",
+        "parts":["feather","log","rock"]
+    },
+    "steak":{
+        "count":1,
+        "station":"furnace",
+        "parts":["beef"]
+    },
+    "porkchop":{
+        "count":1,
+        "station":"furnace",
+        "parts":["pork"]
+    },
+    "bone_knife":{
+        "count":1,
+        "station":"worktable",
+        "parts":["log","bone","rock"]
     }
-
 }

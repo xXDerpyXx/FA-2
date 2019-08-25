@@ -99,6 +99,7 @@ imgobj("./map.png", function(rgbs)
         if(map[i] == undefined){
             map[i] = new District(i,[],"ocean")
         }
+        map[i].inventory = {};
 
         map[i].neighbors.push(i-1);
         map[i].neighbors.push(i+1);
@@ -214,6 +215,22 @@ class Food extends Item
     }
 }
 
+class Animal extends Item
+{
+    /**
+     * 
+     * @param {boolean|undefined} stackable 
+     * @param {string} name 
+     * @param {array} drops 
+     */
+    constructor(stackable, name, drops)
+    {
+        super(stackable, name);
+        this.type = "animal";
+        this.drops = drops;
+    }
+}
+
 class Vehicle extends Item
 {
     /**
@@ -289,6 +306,8 @@ function randOre(biome){
             return "gold_ore";
         }else if(Math.random() < 0.1){
             return "copper_ore";
+        }else if(Math.random() < 0.25){
+            return "coal";
         }else if(Math.random() < 0.5){
             return "rock";
         }else{
@@ -429,6 +448,90 @@ function randGather(biome){
     return output;
 }
 
+function randHunt(biome){
+    var output = [];
+    if(Math.random() > 0.5){
+        return [null,"you couldn't find anything"];
+    }
+    if(biome == "jungle"){ 
+        if(Math.random() > 0.5){
+            output[0] = "bird";
+            output[1] = "you find an bird in the trees";
+        }else{
+            output[0] = "boar";
+            output[1] = "you find a boar in a clearing";
+        }
+    }else if(biome == "plains"){
+        if(Math.random() > 0.5){
+            output[0] = "cow";
+            output[1] = "you find cow in a field";
+        }else if(Math.random() > 0.5){
+            output[0] = "buffalo";
+            output[1] = "you find buffalo in a field";
+        }else if(Math.random() > 0.75){
+            output[0] = "pig";
+            output[1] = "you find a pig in a field";
+        }else{
+            output[0] = "sheep";
+            output[1] = "you find a sheep in a field";
+        }
+    }else if(biome == "savannah"){
+        if(Math.random() > 0.5){
+            output[0] = "cow";
+            output[1] = "you find cow in a field";
+        }else if(Math.random() > 0.75){
+            output[0] = "sheep";
+            output[1] = "you find a sheep in a field";
+        }else{
+            output[0] = "pig";
+            output[1] = "you find a pig in a field";
+        }
+    }else if(biome == "swamp"){
+        if(Math.random() > 0.75){
+            output[0] = "pig";
+            output[1] = "you find a pig in the mud";
+        }else{
+            output[0] = "bird";
+            output[1] = "you find an bird in the trees";
+        }
+    }else if(biome == "forest"){
+        if(Math.random() > 0.25){
+            output[0] = "deer";
+            output[1] = "you find a deer in the woods";
+        }else if(Math.random() > 0.5){
+            output[0] = "pig";
+            output[1] = "you find a pig in a clearing";
+        }else{
+            output[0] = "chicken";
+            output[1] = "you find an chicken in the trees";
+        }
+    }else if(biome == "mountains"){
+        if(Math.random() > 0.75){
+            output[0] = "sheep";
+            output[1] = "you find a sheep on a ledge";
+        }else{
+            output[0] = "goat";
+            output[1] = "you find a goat on a ledge";
+        }
+    }else if(biome == "desert"){
+        return null
+    }else if(biome == "valley"){
+        if(Math.random() > 0.5){
+            output[0] = "goat";
+            output[1] = "you find a goat on a ledge";
+        }else if(Math.random() > 0.5){
+            output[0] = "cow";
+            output[1] = "you find a cow near a river";
+        }else{
+            output[0] = "sheep";
+            output[1] = "you find a near a river";
+        }
+    }else{
+        return null;
+    }
+    return output;
+}
+
 var items = {};
 items["log"] = new Resource(true,"log");
 items["rock"] = new Resource(true,"rock");
@@ -466,7 +569,13 @@ items["gunpowder"] = new Resource(true,"gunpowder");
 items["iron_blade"] = new Resource(true,"iron_blade");
 items["bone"] = new Resource(true,"bone");
 items["bone_meal"] = new Resource(true,"bone_meal");
+items["feather"] = new Resource(true,"feather");
+items["wool"] = new Resource(true,"wool");
+items["string"] = new Resource(true,"string");
+items["wood_wheel"] = new Resource(true,"wood_wheel");
+items["arrow"] = new Resource(true,"arrow");
 
+items["spinner"] = new Resource(true,"spinner");
 items["worktable"] = new Resource(true,"worktable");
 items["furnace"] = new Resource(true,"furnace");
 items["carbonator"] = new Resource(true,"carbonator");
@@ -520,6 +629,7 @@ items["pbj"] = new Food(true,"pbj",50)
 items["apple_sauce"] = new Food(true,"apple_sauce",40)
 items["caramel_apple"] = new Food(true,"caramel_apple",50)
 items["rice_bowl"] = new Food(true,"rice_bowl",20)
+items["salted_peanuts"] = new Food(true,"salted_peanuts",20)
 
 items["sugar_cane"] = new Food(true,"sugar_cane",5)
 items["sugar"] = new Food(true,"sugar",7)
@@ -534,6 +644,8 @@ items["orange"] = new Food(true,"orange",17)
 items["orange_juice"] = new Food(true,"orange_juice",40)
 items["apple_juice"] = new Food(true,"apple_juice",35)
 items["berry_juice"] = new Food(true,"berry_juice",30)
+items["pasta"] = new Food(true,"pasta",10)
+items["macaroni_and_cheese"] = new Food(true,"macaroni_and_cheese",60)
 
 items["cactus"] = new Food(true,"cactus",3)
 items["cactus_juice"] = new Food(true,"cactus_juice",15)
@@ -542,14 +654,19 @@ items["bread_slice"] = new Food(true,"bread_slice",5)
 items["toast"] = new Food(true,"toast",10)
 items["beef"] = new Food(true,"beef",7)
 items["fowl"] = new Food(true,"fowl",6)
+items["pork"] = new Food(true,"pork",7)
+items["porkchop"] = new Food(true,"porkchop",25)
 items["venison"] = new Food(true,"venison",9)
 items["mutton"] = new Food(true,"mutton",7)
 items["stock"] = new Food(true,"stock",4)
+items["steak"] = new Food(true,"steak",30)
 items["steak_soup"] = new Food(true,"steak_soup",40)
 items["chicken_soup"] = new Food(true,"chicken_soup",35)
 items["chicken_noodle_soup"] = new Food(true,"chicken_noodle_soup",50)
 items["berry_pie"] = new Food(true,"berry_pie",50)
 items["apple_pie"] = new Food(true,"apple_pie",60)
+items["orange_pie"] = new Food(true,"orange_pie",65)
+
 items["fizzy_water"] = new Food(true,"fizzy_water",10)
 items["fruit_soda"] = new Food(true,"fruit_soda",60)
 items["ginger_ale"] = new Food(true,"ginger_ale",40)
@@ -557,6 +674,13 @@ items["berry_soda"] = new Food(true,"berry_soda",30)
 items["apple_soda"] = new Food(true,"apple_soda",40)
 items["cactus_soda"] = new Food(true,"cactus_soda",50)
 items["orange_soda"] = new Food(true,"orange_soda",50)
+items["milk"] = new Food(true,"milk",10)
+items["butter"] = new Food(true,"butter",7)
+items["garlic"] = new Food(true,"garlic",6)
+items["garlic_bread"] = new Food(true,"garlic_bread",30)
+items["pineapple"] = new Food(true,"pineapple",10)
+items["tomato"] = new Food(true,"tomato",7)
+items["cheese"] = new Food(true,"cheese",7)
 
 
 items["oil_rig"] = new Tool(false,"oil_rig",50, function(id,msg){
@@ -579,9 +703,70 @@ items["oil_rig"] = new Tool(false,"oil_rig",50, function(id,msg){
 
 },"desert",5);
 
-items["iron_knife"] = new Tool(false,"iron_knife",50, function(id,msg){
-
+items["bone_knife"] = new Tool(false,"bone_knife",20, function(id,msg){
+    var uid = msg.author.id;
+    if(msg.mentions.users.first() != null){
+        var target = msg.mentions.users.first().id;
+        if(people[target] == null){
+            msg.channel.send("they arent real");
+        }else{
+            if(people[target].district != people[uid].district){
+                msg.channel.send("they are too far away!");
+            }else{
+                people[target].hp -= (Math.random()*5) + 10;
+                msg.channel.send(":knife: oof!");
+                people[uid].inventory["bone_knife"]--;
+            }
+        }
+    }else{
+        msg.channel.send("you need to ping a target");
+    }
 },"any",5);
+
+items["iron_knife"] = new Tool(false,"iron_knife",50, function(id,msg){
+    var uid = msg.author.id;
+    if(msg.mentions.users.first() != null){
+        var target = msg.mentions.users.first().id;
+        if(people[target] == null){
+            msg.channel.send("they arent real");
+        }else{
+            if(people[target].district != people[uid].district){
+                msg.channel.send("they are too far away!");
+            }else{
+                people[target].hp -= (Math.random()*10) + 10;
+                msg.channel.send(":knife: oof!");
+                people[uid].inventory["iron_knife"]--;
+            }
+        }
+    }else{
+        msg.channel.send("you need to ping a target");
+    }
+},"any",5);
+
+items["bow"] = new Tool(false,"bow",200, function(id,msg){
+    var uid = msg.author.id;
+    if(people[uid].inventory["arrow"] == null || people[uid].inventory["arrow"] <= 0){
+        msg.channel.send("you have no arrows!");
+    }else{
+        if(msg.mentions.users.first() != null){
+            var target = msg.mentions.users.first().id;
+            if(people[target] == null){
+                msg.channel.send("they arent real");
+            }else{
+                if(people[target].district != people[uid].district){
+                    msg.channel.send("they are too far away!");
+                }else{
+                    people[uid].inventory["arrow"]--;  
+                    var dmg = (Math.random()*10) + 20
+                    people[target].hp -= dmg;
+                    msg.channel.send(":bow_and_arrow: oof! "+dmg+" damage!");
+                }
+            }
+        }else{
+            msg.channel.send("you need to ping a target");
+        }
+    }
+},"any",2);
 
 items["stone_pickaxe"] = new Tool(false,"stone_pickaxe",50, function(id,msg){
     if(Math.random() < 0.9){
@@ -620,6 +805,17 @@ items["bronze_pickaxe"] = new Tool(false,"bronze_pickaxe",500, function(id,msg){
         return ore;
     }
 },"any",2);
+
+
+items["cow"] = new Animal(true,"cow",["beef","beef","beef","bone","bone"]);
+items["chicken"] = new Animal(true,"chicken",["fowl","bone","feather","feather"])
+items["pig"] = new Animal(true,"pig",["pork","pork","bone"])
+items["boar"] = new Animal(true,"boar",["pork","pork","bone","bone"])
+items["bird"] = new Animal(true,"bird",["fowl","bone","feather","feather","feather"])
+items["buffalo"] = new Animal(true,"buffalo",["beef","beef","beef","beef","beef","bone","bone"]);
+items["deer"] = new Animal(true,"deer",["venison","venison","bone","bone"]);
+items["sheep"] = new Animal(true,"sheep",["mutton","mutton","bone","bone","wool","wool"]);
+items["goat"] = new Animal(true,"goat",["mutton","bone","bone"]);
 
 map = [];/*
 map[0] = new District(0,[1,2,3,4],"desert");
@@ -718,6 +914,8 @@ for(var k in people){
         }
     }
 }
+
+
 
 client.on('message', msg => {
     try{
@@ -818,8 +1016,8 @@ client.on('message', msg => {
             }
 
             if(content[0] == prefix+"die"){
-                delete people[id];
-                msg.channel.send("oh no, you died, oof");
+                people[id].hp = -1;
+        
             }
 
             if(content[0] == prefix+"top"){
@@ -979,6 +1177,58 @@ client.on('message', msg => {
                 
             }
 
+            if(content[0] == prefix+"slaughter"){
+                if(content[1] != null){
+                    if(people[id].inventory[content[1]] == null || people[id].inventory[content[1]] <= 0){
+                        msg.channel.send("you don't have a "+content[1]+" to slaughter");
+                    }else{
+                        if(items[content[1]].type != "animal"){
+                            msg.channel.send("you cant slaughter that");
+                        }else{
+                            
+                            var temp = "you got:\n";
+                            for(var i = 0; i < items[content[1]].drops.length;i++){
+                                people[id].addItem(items[content[1]].drops[i],1);
+                                temp += items[content[1]].drops[i]+" ";
+                            }
+                            people[id].inventory[content[1]]--;
+                            msg.channel.send(temp);
+                        }
+                        
+                    }
+                }else{
+                    msg.channel.send("you have to specify what to slaughter");
+                }
+            }
+
+            if(content[0] == prefix+"hunt"){
+                if(people[id].hunger > 10){
+                    var output = randHunt(map[people[id].district].biome);
+                    if(output == null){
+                        msg.channel.send("there are no animals here")
+                    }else{
+                        if(output[0] == null){
+                            msg.channel.send(output[1]);
+                            people[id].hunger -= 10;
+                        }else{
+                            people[id].addItem(output[0],1);
+                            msg.channel.send(output[1]);
+                            people[id].hunger -= 10;
+                        }
+                        
+                    }
+                }else{
+                    msg.channel.send("you're too hungry to work");
+                }
+                
+            }
+
+            if(content[0] == prefix+"pickup"){
+                for(var k in map[people[id].district].inventory){
+                    people[id].addItem(k,map[people[id].district].inventory[k]);
+                }
+                msg.channel.send("you picked up all items on the ground here");
+            }
 
             if(content[0] == prefix+"neighbors"){
                 msg.channel.send(map[people[id].district].neighbors);
@@ -1059,6 +1309,9 @@ client.on('message', msg => {
 
             if(msg.content == prefix+"hunger"){
                 msg.channel.send(people[id].hunger+"/100");
+            }
+            if(msg.content == prefix+"hp"){
+                msg.channel.send(people[id].hp+"/100");
             }
 
             if(msg.content == prefix+"help"){
@@ -1161,6 +1414,14 @@ client.on('message', msg => {
                                 }
                                 people[id].inventory[content[1]]--;
                                 msg.channel.send("mmm, you gained "+items[content[1]].replenishAmt+" hunger");
+                                if(people[id].hp < 100){
+                                    people[id].hp += items[content[1]].replenishAmt;
+                                }
+
+                                if(people[id].hp > 100){
+                                    people[id].hp = 100;
+                                }
+
                             }
                             
                         }else{
@@ -1175,7 +1436,21 @@ client.on('message', msg => {
             }
 
         }
-
+        for(var k in people){
+            if(people[k].hp == null)
+                people[k].hp = 100;
+            if(people[k].hp <= 0){
+                msg.channel.send("<@"+k+"> has died!");
+                for(var j in people[k].inventory){
+                    if(map[people[k].district].inventory[j] == undefined){
+                        map[people[k].district].inventory[j] = people[k].inventory[j];
+                    }else{
+                        map[people[k].district].inventory[j] += people[k].inventory[j];
+                    }
+                }
+                delete people[k];
+            }
+        }
         save();
     }catch(err){
         msg.channel.send("oof, mention this to derpy");
