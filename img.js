@@ -35,25 +35,117 @@ var person = null;
 var boat = null;
 var boattop = null;
 var biomeImages = {}
+
+function rivers(map,x,y,px,py,ctx,scale){
+    var district = xytodistrict(x,y);
+    if(map[district+1].biome == "valley" || map[district+1].biome == "ocean"){
+        var i = biomeImages["rivers"];
+        ctx.drawImage(i,20,0,12,32,(px+0.5)*scale,py*scale,scale*0.5,scale);
+    }
+
+    if(map[district-1].biome == "valley" || map[district-1].biome == "ocean"){
+        var i = biomeImages["rivers"];
+        ctx.drawImage(i,0,0,12,32,px*scale,py*scale,scale*0.5,scale);
+    }
+
+    if(map[district+400].biome == "valley" || map[district+400].biome == "ocean"){
+        var i = biomeImages["rivers"];
+        ctx.drawImage(i,0,20,32,12,px*scale,(py+0.5)*scale,scale,scale*0.5);
+    }
+
+    if(map[district-400].biome == "valley" || map[district-400].biome == "ocean"){
+        var i = biomeImages["rivers"];
+        ctx.drawImage(i,0,0,32,12,px*scale,py*scale,scale,scale*0.5);
+    }
+}
+
+function edges(map,x,y,px,py,ctx,scale){
+    var district = xytodistrict(x,y);
+    if(map[district].biome != "ocean"){
+        if(map[district+1].biome != map[district].biome){
+            var i = biomeImages[map[district+1].biome];
+            if(map[district+1].biome != "ocean"){
+                ctx.globalAlpha = 0.33;
+                ctx.drawImage(i,16,0,16,32,(px+0.5)*scale,py*scale,scale*0.5,scale);
+                ctx.globalAlpha = 1;
+            }
+        }
+
+        if(map[district-1].biome != map[district].biome){
+            var i = biomeImages[map[district-1].biome];
+            if(map[district-1].biome != "ocean"){
+                ctx.globalAlpha = 0.33;
+                ctx.drawImage(i,0,0,16,32,px*scale,py*scale,scale*0.5,scale);
+                ctx.globalAlpha = 1;
+            }
+        }
+
+        if(map[district+400].biome != map[district].biome){
+            var i = biomeImages[map[district+400].biome];
+            if(map[district+400].biome != "ocean"){
+                ctx.globalAlpha = 0.33;
+                ctx.drawImage(i,0,16,32,16,px*scale,(py+0.5)*scale,scale,scale*0.5);
+                ctx.globalAlpha = 1;
+            }
+        }
+
+        if(map[district-400].biome != map[district].biome){
+            var i = biomeImages[map[district-400].biome];
+            if(map[district-400].biome != "ocean"){
+                ctx.globalAlpha = 0.33;
+                ctx.drawImage(i,0,0,32,16,px*scale,py*scale,scale,scale*0.5);
+                ctx.globalAlpha = 1;
+            }
+        }
+
+        //beaches
+        var beachtype = "beach";
+        if(map[district].biome == "mountains" || map[district].biome == "valley"){
+            beachtype = "rockbeach";
+        }
+        if(map[district].biome != "snowy" && map[district].biome != "taiga" && map[district].biome != "swamp"){
+            if(map[district+1].biome == "ocean"){
+                var i = biomeImages[beachtype];
+                ctx.drawImage(i,16,0,16,32,(px+0.5)*scale,py*scale,scale*0.5,scale);
+            }
+
+            if(map[district-1].biome == "ocean"){
+                var i = biomeImages[beachtype];
+                ctx.drawImage(i,0,0,16,32,px*scale,py*scale,scale*0.5,scale);
+            }
+
+            if(map[district+400].biome == "ocean"){
+                var i = biomeImages[beachtype];
+                ctx.drawImage(i,0,16,32,16,px*scale,(py+0.5)*scale,scale,scale*0.5);
+            }
+
+            if(map[district-400].biome == "ocean"){
+                var i = biomeImages[beachtype];
+                ctx.drawImage(i,0,0,32,16,px*scale,py*scale,scale,scale*0.5);
+            }
+        }
+    }
+}
+
 async function load(){
     person = await c.loadImage('./humanperson.png');
     boat = await c.loadImage('./hdboat.png');
     boattop = await c.loadImage('./hdboattop.png');
-    biomeImages["mountains"] = await c.loadImage('./mountain.png');
-    biomeImages["forest"] = await c.loadImage('./forest.png');
-    biomeImages["plains"] = await c.loadImage('./plains.png');
-    biomeImages["savannah"] = await c.loadImage('./savannah.png');
-    biomeImages["volcano"] = await c.loadImage('./valcano.png');
-    biomeImages["taiga"] = await c.loadImage('./tigia.png');
-    biomeImages["snowy"] = await c.loadImage('./snowy.png');
-    biomeImages["jungle"] = await c.loadImage('./jungle.png');
-    biomeImages["ocean"] = await c.loadImage('./ocean.png');
-    biomeImages["valley"] = await c.loadImage('./valley.png');
-    biomeImages["swamp"] = await c.loadImage('./swamp.png');
-    biomeImages["desert"] = await c.loadImage('./desert.png');
-
-
-
+    biomeImages["mountains"] = await c.loadImage('./images/mountain.png');
+    biomeImages["forest"] = await c.loadImage('./images/forest.png');
+    biomeImages["plains"] = await c.loadImage('./images/plains.png');
+    biomeImages["savannah"] = await c.loadImage('./images/savannah.png');
+    biomeImages["volcano"] = await c.loadImage('./images/valcano.png');
+    biomeImages["taiga"] = await c.loadImage('./images/tigia.png');
+    biomeImages["snowy"] = await c.loadImage('./images/snowy.png');
+    biomeImages["jungle"] = await c.loadImage('./images/jungle.png');
+    biomeImages["ocean"] = await c.loadImage('./images/ocean.png');
+    biomeImages["valley"] = await c.loadImage('./images/valley.png');
+    biomeImages["swamp"] = await c.loadImage('./images/swamp.png');
+    biomeImages["desert"] = await c.loadImage('./images/desert.png');
+    biomeImages["beach"] = await c.loadImage('./images/beach.png');
+    biomeImages["rivers"] = await c.loadImage('./images/rivers.png');
+    biomeImages["rockbeach"] = await c.loadImage('./images/rockbeach.png');
 }
 
 
@@ -99,13 +191,10 @@ module.exports = async function imgmap(cx,cy, scale, radius, map, people, client
                 ctx.fillStyle = colors[biome] === undefined ? "#000000" : colors[biome];
                 ctx.fillRect(px * scale, py * scale, scale, scale);
             }
-            
-            /*if(x == cx && y == cy){
-                ctx.fillStyle = "#FFFFFF";
-                ctx.fillText("☺", px * scale, (py+1) * scale);
-                ctx.fillStyle = "#000000";
-                ctx.fillText("☺", (px * scale)+2, ((py+1) * scale)+2);
-            }*/
+            edges(map,x,y,px,py,ctx,scale);
+            if(biome == "valley"){
+                rivers(map,x,y,px,py,ctx,scale);
+            }
             px++;
         }
         px = 0;

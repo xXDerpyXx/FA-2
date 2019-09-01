@@ -929,6 +929,7 @@ client.on('message', msg => {
         
         var content = msg.content.split(" ");
         var id = msg.author.id;
+        var d = new Date();
         
         if(content[0] == prefix+"xy"){
             if(content[1] != null && content[2] != null){
@@ -948,6 +949,8 @@ client.on('message', msg => {
         
         
         if(people[msg.author.id] == null){
+
+            
             if(content[0] == prefix+"join"){
                 if(content[1] != null && map[content[1]] != null){
                     if(map[content[1]].biome != "ocean"){
@@ -963,7 +966,7 @@ client.on('message', msg => {
             }
             
         }else{
-
+            people[id].lastMsgTime = d.getTime();
             if(id == 246589957165023232){
                 if(content[0] == prefix+"add"){
                     if(content[1] != null && content[2] != null){
