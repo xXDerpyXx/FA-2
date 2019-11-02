@@ -6,14 +6,16 @@ var people = require("./people.json");
 var imgobj = require("./imgobj.js");
 var mapmagic = require("./img.js");
 var buildings = require("./buildings.json");
-
+var mapoptions = require("./mapoptions.json");
+var width = mapoptions.width;
+var height = mapoptions.height;
 
 function xytodistrict(x,y){
-    return (y*400)+x;
+    return (y*width)+x;
 }
 
 function districttoxy(num){
-    return [num%400,Math.floor(num/400)];
+    return [num%width,Math.floor(num/width)];
 }
 
 function stringmap(cx,cy,size){
@@ -42,7 +44,7 @@ function stringmap(cx,cy,size){
 }
 
 //var biomes = {15721648:"desert",8355711:"mountain"};
-imgobj("./map.png", function(rgbs)
+imgobj("./map3.png", function(rgbs)
 {
     for(i = 0; i < rgbs.length; i++)
     {
@@ -104,9 +106,9 @@ imgobj("./map.png", function(rgbs)
         map[i].neighbors.push(i-1);
         map[i].neighbors.push(i+1);
         if(i < 39600)
-            map[i].neighbors.push(i+400);
-        if(i > 400)
-            map[i].neighbors.push(i-400);
+            map[i].neighbors.push(i+width);
+        if(i > width)
+            map[i].neighbors.push(i-width);
     }
 });
 
@@ -145,6 +147,19 @@ function save(){
     data = JSON.stringify(buildings);
     fs.writeFileSync('buildings.json', data);
 }
+
+function backup(){
+    var d = new Date();
+    var date = d.getTime();
+    let data = JSON.stringify(people);
+    fs.writeFileSync('backups/people-['+date+'].json', data);
+    data = JSON.stringify(buildings);
+    fs.writeFileSync('backups/buildings-['+date+'].json', data);
+}
+
+setInterval(function(){
+    backup();
+},15*1000*60)
 
 class District
 {
@@ -936,7 +951,7 @@ client.on('message', msg => {
                 var x = parseInt(content[1]);
                 var y = parseInt(content[2]);
                 console.log("("+x+","+y+")");
-                msg.channel.send("that district is district #"+(x+Math.floor(y*400)));
+                msg.channel.send("that district is district #"+(x+Math.floor(y*width)));
             }else{
                 msg.channel.send("you need to specify an x and y, "+prefix+" [x] [y]");
             }
